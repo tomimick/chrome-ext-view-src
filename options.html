@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="options.css" type="text/css" />
+        <title>Options - Quick source viewer</title>
+    </head>
+<body>
+    <h1><img src="gear19.png" /> Options - Quick source viewer</h1>
+
+    <div class="item">
+        <div class="help">
+            <p>Display the number of Javascript and CSS nodes as a tooltip
+              in the toolbar.</p>
+        </div>
+
+        <h2>Display tooltip</h2>
+
+        <label><input id="inptip" type="checkbox"/> Display counts in tooltip</label>
+    </div>
+
+
+    <div class="item">
+        <div class="help">
+            <p>Initially beautifies source code. (Beautify modifies
+            styling such as new
+            lines, whitespace and indentation to make source more readable.)</p>
+
+            <p>You can control this on demand in the source view with a button
+            or a keyboard shortcut 'b'.</p>
+        </div>
+
+        <h2>Beautify</h2>
+
+        <label><input id="inpbeautify" type="checkbox"/> Beautify sources</label>
+    </div>
+
+
+    <div class="item">
+        <div class="help">
+            <p>List of source files urls to hilight, one url match per line.</p>
+        </div>
+
+        <h2>Hilight sources</h2>
+
+        <textarea id="hi"></textarea>
+    </div>
+
+
+    <div class="item">
+        <div class="help">
+            <p>Adjust the look and feel of the extension with custom CSS.
+            (See the available elements by inspecting the page.)</p>
+        </div>
+
+        <h2>CSS</h2>
+
+        <textarea id="css"></textarea>
+    </div>
+
+    <div class="author">
+        <p>by <a href="http://tomicloud.com/2012/07/viewsrc-chrome-ext?chrome=1">
+            Tomi Mickelsson</a></p>
+
+        <p>Credits to <a target="_blank"
+            href="http://jsbeautifier.org/">jsbeautifier.org</a>
+        and <a target="_blank"
+            href="http://softwaremaniacs.org/soft/highlight/en/">highlight.js</a>
+        </p>
+    </div>
+
+</body>
+<script src="ext/zepto.min.js" type="text/javascript"></script>
+<script src="config.js" type="text/javascript"></script>
+<script src="options.js" type="text/javascript"></script>
+
+</html>
+

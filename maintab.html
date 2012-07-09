@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="maintab.css" type="text/css" />
+        <link href="ext/googlecode.css" type="text/css" rel="stylesheet" />
+        <title></title>
+    </head>
+<body>
+    <div id="list">
+        <h2>HTML</h2>
+
+        <ol id="htmllist">
+        </ol>
+
+        <h2>Javascript <span id="jstotal"></span> &nbsp;
+            <i>(external <span id="jsext"></span>,
+            inline <span id="jsin"></span>)</i></h2>
+
+        <ol id="jslist">
+        </ol>
+
+        <h2>CSS <span id="csstotal"></span> &nbsp;
+            <i>(external <span id="cssext"></span>,
+            inline <span id="cssin"></span>)</i></h2>
+
+        <ol id="csslist">
+        </ol>
+
+        <div id="tips">
+        <p>Tips</p>
+        <div>
+            <ul>
+            <li>Shows current sources in the DOM.</li>
+            <li>"INJECTED" nodes have been injected to DOM by Javascript after
+            page load.</li>
+            <li>Other Chrome extensions may inject CSS that is not
+            correctly labeled as "INJECTED".</li>
+            <li>Press 'b' to toggle beautifier.</li>
+            <li>Shows only sources of the top frame.</li>
+            <li>Adjust <a id="options" href="#">options</a> of this page.</li>
+            </ul>
+        </div>
+        </div>
+    </div>
+
+    <div id="srcview">
+        <a href="#" id="beautify">Beautify</a>
+
+        <h2 id="fname">&nbsp;</h2>
+        <p id="showerr">Error loading file</p>
+        <pre id="src"><code></code></pre>
+    </div>
+
+</body>
+<script src="ext/zepto.min.js" type="text/javascript"></script>
+<script src="maintab.js" type="text/javascript"></script>
+<script src="config.js" type="text/javascript"></script>
+
+<script type="text/javascript" src="ext/highlight.pack.js"></script>
+<script type="text/javascript" src="ext/beautify.min.js"></script>
+<script type="text/javascript" src="ext/beautify-html.min.js"></script>
+<script type="text/javascript" src="ext/beautify-css.min.js"></script>
+
+</html>
+

@@ -1,0 +1,43 @@
+
+body {
+    max-width: 600px;
+    margin: 10px auto;
+    background: #eee;
+    font-family: helvetica;
+}
+
+h2 {
+    margin-top: 0;
+}
+
+textarea {
+    width: 100%;
+    height: 140px;
+}
+
+div.help {
+    float: right;
+    color: #777;
+    width: 50%;
+/*    margin-left: 10%;*/
+    font-size: 80%;
+}
+div.help p {
+    margin-top: 0;
+}
+
+div.item {
+    clear: both;
+    box-shadow: 1px 1px 5px #777;
+    padding: 10px;
+    margin: 10px 0;
+    background: #fff;
+    overflow: hidden;
+}
+
+.author {
+/*    float: right;*/
+    text-align: center;
+    font-size: 80%;
+}
+

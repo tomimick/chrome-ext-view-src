@@ -1,0 +1,25 @@
+{
+  "name": "Quick source viewer",
+  "version": "1.0.0",
+  "description": "View page source, HTML + Javascript + CSS, quick and compact",
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+  ],
+  "manifest_version": 2,
+  "browser_action": {
+    "default_icon": "gear19.png"
+  },
+  "icons": { "16": "gear19.png",
+             "128": "gear128.png" },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["load.js"],
+      "run_at":  "document_end"
+    }
+  ],
+  "options_page": "options.html",
+  "background": { "scripts" : ["config.js", "bg.js"]},
+  "minimum_chrome_version": "15"
+}
+
