@@ -21,8 +21,8 @@ function init() {
     // view sources
     $("ol").on("click", "a", function(){
         var a = $(this);
-        if (a.attr("href") != '#')
-            return true;
+        if (a.attr("title"))
+            return true; // html viewsource link
 
         var li = a.closest("li");
         $("ol>li").removeClass("sel");
@@ -273,7 +273,7 @@ function add_item(ol, item) {
     var s;
 
     if (item.src)
-        s = "<li><a href='#'>"+emphasize_name(item.src);
+        s = "<li><a href='"+item.src+"'>"+emphasize_name(item.src);
     else if (item.count)
         s = "<li><a href='#'>"+data.url;
     else
@@ -305,7 +305,8 @@ function emphasize_name(url) {
     else if (i < 0)
         return "<b>"+url+"</b>";
     else
-        return url.substr(0,i+1) + "<b>" + url.substr(i+1) + "</b>";
+        return url.substr(0,i+1) + "<b>&#8203;" + url.substr(i+1) + "</b>";
+    // zero-width space above, breaks line if needed
 }
 
 //http://stackoverflow.com/questions/2901102/how-to-print-number-with-commas-as-thousands-separators-in-javascript

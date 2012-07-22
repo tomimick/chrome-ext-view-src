@@ -1,9 +1,10 @@
 
 /* content script - loaded with all pages */
 
-// mark initial nodes and send counts to bg page so it updates badge
+// mark initial nodes
 var data = build_response(get_js(true), get_css(true));
-chrome.extension.sendRequest(data);
+// 1.0.1: no need to update counts from here
+//chrome.extension.sendRequest(data);
 
 
 // bg calls us, asking data
@@ -12,7 +13,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     var data = build_response(get_js(), get_css());
 
     // get html too
-    data.html = [{"inline":get_dom(), "count":document.all.length}];
+    data.html = [{"inline":get_dom(), "count":document.getElementsByTagName('*').length}];
 
     sendResponse(data);
 });
@@ -51,8 +52,7 @@ function get_css(mark_initial) {
     var styles = document.getElementsByTagName("link");
     for(i=0; i<styles.length; i++){
         node = styles[i];
-        if (node.rel == "stylesheet" || node.rel == "alternate" ||
-                node.type == "text/css")
+        if (node.rel == "stylesheet" || node.type == "text/css")
             pick_node(node, a, mark_initial);
     }
 

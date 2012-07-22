@@ -33,17 +33,17 @@ chrome.extension.onRequest.addListener(function(req, sender, sendResponse) {
 });
 
 
-// tab changed - update badge
-chrome.tabs.onActivated.addListener(function(tab) {
-    var id = tab.tabId;
+function tab_updated(id) {
+//    var id = tab.tabId;
     console.log('active tab: '+id);
 
     if (!get_config("tooltip"))
         return;
 
-    // must ask tab.url, not in tab yet!
+    // ask url
     chrome.tabs.get(id, function(tab) {
         if (tab.url && !tab.url.startsWith("chrome")) {
+            // ask counts from content script
             chrome.tabs.sendMessage(id, {}, function(reply){
                 update_badge(reply);
             });
@@ -52,6 +52,18 @@ chrome.tabs.onActivated.addListener(function(tab) {
             chrome.browserAction.setBadgeText({"text":""});
         }
     });
+}
+
+// tab activity - update badge
+chrome.tabs.onActivated.addListener(function(tab){
+    var id = tab.tabId;
+    tab_updated(id);
+});
+chrome.tabs.onUpdated.addListener(function(tabid, info){
+    if (info.status == "complete")
+        tab_updated(tabid);
+    else
+        chrome.browserAction.setBadgeText({"text":""});
 });
 
 console.log('bg loaded');
