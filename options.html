@@ -8,13 +8,13 @@
 
     <div class="item">
         <div class="help">
-            <p>Display the number of Javascript and CSS nodes as a tooltip
+            <p>Show the number of Javascript and CSS nodes as a badge
               in the toolbar.</p>
         </div>
 
-        <h2>Display tooltip</h2>
+        <h2>Badge</h2>
 
-        <label><input id="inptip" type="checkbox"/> Display counts in tooltip</label>
+        <label><input id="inptip" type="checkbox"/> Show node counts in badge</label>
     </div>
 
 
@@ -31,6 +31,17 @@
         <h2>Beautify</h2>
 
         <label><input id="inpbeautify" type="checkbox"/> Beautify sources</label>
+    </div>
+
+    <div class="item">
+        <div class="help">
+            <p>Shows caching information of external files. Picks the HTTP
+            header "Expires", "Cache-Control" or "Age", in this order. </p>
+        </div>
+
+        <h2>Cache header</h2>
+
+        <label><input id="inpcache" type="checkbox"/> Show cache header of files </label>
     </div>
 
 
@@ -51,14 +62,13 @@
             (See the available elements by inspecting the page.)</p>
         </div>
 
-        <h2>CSS</h2>
+        <h2>Custom CSS</h2>
 
         <textarea id="css"></textarea>
     </div>
 
     <div class="author">
-        <p>by <a href="http://tomicloud.com/2012/07/viewsrc-chrome-ext?chrome=1">
-            Tomi Mickelsson</a></p>
+        <p>by Tomi Mickelsson &mdash; <a href="http://tomicloud.com/2012/07/viewsrc-chrome-ext?chrome=1">tomicloud.com</a></p>
 
         <p>Credits to <a target="_blank"
             href="http://jsbeautifier.org/">jsbeautifier.org</a>

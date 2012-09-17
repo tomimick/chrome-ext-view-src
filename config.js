@@ -34,6 +34,7 @@ function _init_config() {
     c.beautify = true;
     c.tooltip  = true;
     c.colorize = true;
+    c.caching = false;
     c.hilight = ["//www.google-analytics.com",
                  "//ajax.googleapis.com",
                  "//connect.facebook.net",

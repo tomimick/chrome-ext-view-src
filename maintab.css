@@ -44,7 +44,7 @@ h2 {
 #srcview {
 /*    margin-right: 1%;*/
     width: 67%;
-/*    min-height: 400px;*/
+    min-height: 60px;
     background: #ddf;
     margin-left: 32.5%;
     padding: 0.5%;
@@ -119,6 +119,9 @@ li.inline > a > span {
 
 #list a:hover {
     background: #eef !important;
+}
+li>p>span.cache {
+    color: #808;
 }
 
 #showerr {

@@ -161,13 +161,14 @@ function build_item(item, lang) {
 }
 
 // updates length info of a loaded node
-function update_li_text(item) {
+function update_li_text(item, header) {
     var s = "";
     if (item.src) {
         if (item.data != undefined)
             s = numberWithCommas(item.data.length)+" bytes";
-    } else
+    } else {
         s = numberWithCommas(item.inline.length)+" bytes";
+    }
 
     if (item.dynamic)
         s += " <span class='dynamic'>INJECTED</span>";
@@ -176,6 +177,10 @@ function update_li_text(item) {
         // single html item
         s += ", "+item.count+ " nodes ";
         s += "<a href='view-source:"+data.url+"' target='_blank' title='View sources before Javascript runs'>View&nbsp;original</a>";
+    }
+
+    if (header) {
+        s += " <span class='cache'> "+header+"</span>";
     }
 
     item.li.find("p").html(s);
@@ -198,14 +203,35 @@ function load_data(item) {
                 // cache file content
                 item.data = xhr.responseText;
 
+                var header = null;
+                if (get_config("caching"))
+                    header = pick_caching_header(xhr);
+
                 show_src();
-                update_li_text(item);
+                update_li_text(item, header);
             } else {
                 $("body").addClass("err");
             }
         }
     };
     xhr.send(null);
+}
+
+// picks caching information of src file
+function pick_caching_header(xhr) {
+    var h = "Expires";
+    var val = xhr.getResponseHeader(h);
+    if (!val) {
+        h = "Cache-Control";
+        val = xhr.getResponseHeader(h);
+    }
+    if (!val) {
+        h = "Age";
+        val = xhr.getResponseHeader(h);
+    }
+
+    if (val)
+        return h+": "+val;
 }
 
 
