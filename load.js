@@ -37,7 +37,8 @@ function get_js(mark_initial) {
     var nodes = document.getElementsByTagName("script");
     for(i=0; i<nodes.length; i++){
         node = nodes[i];
-        pick_node(node, a, mark_initial);
+        if (!node.type || node.type == "text/javascript")
+            pick_node(node, a, mark_initial);
     }
     return a;
 }
