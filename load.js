@@ -1,5 +1,7 @@
 
-/* content script - loaded with all pages */
+/* content script - loaded with all pages
+ * (plain js for speed, no zepto.js here)
+ * */
 
 // mark initial nodes
 var data = build_response(get_js(true), get_css(true));
@@ -10,7 +12,7 @@ var data = build_response(get_js(true), get_css(true));
 // bg calls us, asking data
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
     // count scripts, css
-    var data = build_response(get_js(), get_css());
+    var data = build_response(get_js(false, request.showonclick), get_css());
 
     // get html too
     data.html = [{"inline":get_dom(), "count":document.getElementsByTagName('*').length}];
@@ -30,7 +32,7 @@ function get_dom() {
 }
 
 // enumerate JS scripts in page
-function get_js(mark_initial) {
+function get_js(mark_initial, show_onclick) {
     var a = [];
     var i, node;
 
@@ -40,6 +42,27 @@ function get_js(mark_initial) {
         if (!node.type || node.type == "text/javascript")
             pick_node(node, a, mark_initial);
     }
+    // inline onclick-handlers
+    if (show_onclick) {
+        nodes = document.getElementsByTagName("*");
+        for(i=0; i<nodes.length; i++){
+            node = nodes[i];
+            if (node.getAttribute("onclick")) {
+                var item = pick_node(node, a, mark_initial);
+                var s = "/* " + node.tagName.toLowerCase();
+                if (node.id)
+                    s += "#"+node.id;
+                if (node.className)
+                    s += "."+node.className;
+                s += ".onclick = */\n";
+                item.inline = s + node.getAttribute("onclick");
+                item.src = null;
+                item.dynamic = false;
+                item.onclick = true;
+            }
+        }
+    }
+
     return a;
 }
 
@@ -71,7 +94,7 @@ function pick_node(node, array, mark_initial) {
     // skip extension scripts
     var src = node.href || node.src;
     if (src && startsWith(""+src, "chrome-extension:"))
-        return;
+        return null;
 
     var item;
     if (src)
@@ -87,6 +110,7 @@ function pick_node(node, array, mark_initial) {
         item["dynamic"] = true;
 
     array.push(item);
+    return item;
 }
 
 function startsWith(s, sub) {

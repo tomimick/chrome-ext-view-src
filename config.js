@@ -35,6 +35,7 @@ function _init_config() {
     c.tooltip  = true;
     c.colorize = true;
     c.caching = false;
+    c.onclick = false;
     c.hilight = ["//www.google-analytics.com",
                  "//ajax.googleapis.com",
                  "//connect.facebook.net",
@@ -80,6 +81,12 @@ function update_badge(data) {
     var txt = "";
     if (data) {
         var jscount = data.js.length;
+        /* subtract onclick count
+        for (var i = 0; i < data.js.length; i++) {
+            if (data.js[i].onclick)
+                jscount -= 1;
+        }*/
+
         var csscount = data.css.length;
         txt = ""+jscount+" "+csscount;
     }

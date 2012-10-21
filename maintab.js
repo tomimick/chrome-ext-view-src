@@ -12,7 +12,10 @@ function init() {
         var tabid = location.hash.slice(1);
         tabid = parseInt(tabid);
 
-        chrome.tabs.sendMessage(tabid, {}, data_received);
+        // ask to return onclick handlers too?
+        var show_onclick = get_config("onclick");
+
+        chrome.tabs.sendMessage(tabid, {"showonclick":show_onclick}, data_received);
     } else {
         // while developing
         data_received(debugdata);
@@ -122,7 +125,7 @@ function show_src(li) {
         // inline node
         build_item(item, cls);
 
-        $("#fname").text(item.count? data.url : "INLINE");
+        $("#fname").text(item.count? data.url : item.onclick ? "ONCLICK" : "INLINE");
     }
 
 }
@@ -257,14 +260,21 @@ function data_received(resp) {
     var csscount = resp.css.length;
     var jsinline = 0;
     var cssinline = 0;
+    var onclickcount = 0;
 
     var i, item;
+
     // js
     for (i = 0; i < jscount; i++) {
         item = resp.js[i];
+
         add_item($("#jslist"), item);
+/*        if (!item.src && !item.onclick) */
         if (!item.src)
             jsinline += 1;
+
+//        if (item.onclick)
+//            onclickcount += 1;
 
         update_li_text(item);
     }
@@ -283,8 +293,8 @@ function data_received(resp) {
 
 
     // update counts
-    $("#jstotal").text(jscount);
-    $("#jsext").text(jscount-jsinline);
+    $("#jstotal").text(jscount-onclickcount);
+    $("#jsext").text(jscount-onclickcount-jsinline);
     $("#jsin").text(jsinline);
     $("#csstotal").text(csscount);
     $("#cssext").text(csscount-cssinline);
@@ -302,6 +312,8 @@ function add_item(ol, item) {
         s = "<li><a href='"+item.src+"'>"+emphasize_name(item.src);
     else if (item.count)
         s = "<li><a href='#'>"+data.url;
+    else if (item.onclick)
+        s = "<li><a href='#'>ONCLICK: <span></span>";
     else
         s = "<li><a href='#'>INLINE: <span></span>";
     s += "</a><p></p></li>";
