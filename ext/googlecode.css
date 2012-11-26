@@ -27,7 +27,7 @@ pre .tex .command,
 pre .http .title,
 pre .request,
 pre .status {
-  color: #008;
+  color: #00b;
 }
 
 pre .envvar,
@@ -142,8 +142,35 @@ pre .comment .yardoctag {
   font-weight: bold;
 }
 
-/*tomi*/
+/* tomi */
+/* generic comment */
 .comment {
     background: #fdd;
+}
+.language-javascript .function {
+    font-weight: bold;
+}
+.language-javascript .function .params {
+    background: #ffa;
+}
+
+/* css colors */
+.language-css .rule .value {
+    color: cornflowerblue;
+}
+.language-css .rule .value .number {
+    color: blue;
+}
+.language-css .tag {
+    font-weight: bold;
+}
+.language-css .id {
+    color: blue;
+}
+.language-css .class {
+    color: green;
+}
+.language-css .pseudo {
+    background: #ffa;
 }
 
