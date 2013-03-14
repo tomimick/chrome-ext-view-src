@@ -71,8 +71,19 @@ function get_css(mark_initial) {
     var a = [];
     var i, node;
 
-    /* XXX: get links and styles in order? */
+	/* user var styleSheetList = document.styleSheets; get css files*/
+	var styleSheetList = document.styleSheets;
+	for(i=0;i<styleSheetList.length;i++){
+		var s = styleSheetList[i];
+		pick_node(s.ownerNode,a,mark_initial);
+		
+		/* parse css import */
+		parse_cssrules(s,a,mark_initial,0)
+		
+	}
 
+    /* XXX: get links and styles in order? */
+/*
     var styles = document.getElementsByTagName("link");
     for(i=0; i<styles.length; i++){
         node = styles[i];
@@ -85,8 +96,24 @@ function get_css(mark_initial) {
         node = styles[i];
         pick_node(node, a, mark_initial);
     }
-
+*/
     return a;
+}
+
+function parse_cssrules(css_style_sheet,a,mark_initial,deepth){
+	if(deepth  < 10 ) {
+		var rules = css_style_sheet.cssRules;
+		if(!!rules){
+			for(var i =0;i<rules.length;i++){
+				rule = rules[i];
+				if(rule instanceof CSSImportRule){
+					var s = rule.styleSheet;
+					pick_node({'href':s.href},a,mark_initial)
+					parse_cssrules(rule.styleSheet,a,mark_initial,deepth+1)
+				}
+			}
+		}
+	}
 }
 
 // picks element's src-url or inline content
