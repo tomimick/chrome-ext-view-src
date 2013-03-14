@@ -103,12 +103,14 @@ function get_css(mark_initial) {
 function parse_cssrules(css_style_sheet,a,mark_initial,deepth){
 	if(deepth  < 10 ) {
 		var rules = css_style_sheet.cssRules;
-		for(var i =0;i<rules.length;i++){
-			rule = rules[i];
-			if(rule instanceof CSSImportRule){
-				var s = rule.styleSheet;
-				pick_node({'href':s.href},a,mark_initial)
-				parse_cssrules(rule.styleSheet,a,mark_initial,deepth+1)
+		if(!!rules){
+			for(var i =0;i<rules.length;i++){
+				rule = rules[i];
+				if(rule instanceof CSSImportRule){
+					var s = rule.styleSheet;
+					pick_node({'href':s.href},a,mark_initial)
+					parse_cssrules(rule.styleSheet,a,mark_initial,deepth+1)
+				}
 			}
 		}
 	}
