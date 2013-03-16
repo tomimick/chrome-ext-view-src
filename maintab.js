@@ -138,9 +138,9 @@ function build_item(item, lang) {
 
     // prettify?
     if ($("#beautify").hasClass("sel")) {
-        if (lang == "language-css")
+        if (lang.indexOf( "language-css")!=-1)
             s = css_beautify(s);
-        else if (lang == "language-html")
+        else if (lang.indexOf("language-html")!=-1)
             s = style_html(s);
         else
             s = js_beautify(s);
