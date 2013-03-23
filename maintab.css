@@ -1,11 +1,17 @@
 
+html{
+    height: 100%;
+}
+div.syntaxhighlighter{
+    overflow: visible !important;
+}
 body {
 /*    margin: 5px 1%;*/
     margin:0;
     font-family: helvetica;
     font-size: 80%;
     overflow: hidden;
-    overflow-y: scroll;
+    height:100%;
 }
 body.err #srcview {
     background: #fdd;
@@ -43,8 +49,11 @@ h2 {
 }
 #srcview {
 /*    margin-right: 1%;*/
-    width: 67%;
-    min-height: 60px;
+    min-height: 95%;
+    max-height: 95%;
+    overflow: auto;
+
+    width: 66%;
     background: #ddf;
     margin-left: 32.5%;
     padding: 0.5%;
@@ -79,7 +88,6 @@ a {
     text-decoration: none;
 }
 pre#src {
-    overflow-x: auto;
     padding-bottom: 10px;
     white-space: pre-wrap;
 /*    border: 1px solid #aaf;*/

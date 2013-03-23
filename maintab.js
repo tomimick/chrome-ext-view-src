@@ -91,7 +91,7 @@ function show_src(li) {
     if (index < 0)
         return;
 
-    $("#src>code").text("");
+    $("#src").html("<code></code>");
 
     // js or css array?
     var arr;
@@ -99,17 +99,19 @@ function show_src(li) {
     var cls = "";
     if (ol.get(0).id == "jslist") {
         arr = data.js;
-        cls = "language-javascript";
+        cls = "language-javascript brush:js";
     } else if (ol.get(0).id == "htmllist") {
         arr = data.html;
-        cls = "language-html";
+        cls = "language-html brush:html";
     } else {
         arr = data.css;
-        cls = "language-css";
+        cls = "language-css brush:css";
     }
 
     // provide language hint for prettify
-    $("#src>code").removeClass("xml language-javascript language-html language-css").addClass(cls);
+    //$("#src>code").removeClass("xml language-javascript language-html language-css").addClass(cls);
+    
+    $("#src>code").addClass(cls);
 
     var item = arr[index];
 
@@ -136,9 +138,9 @@ function build_item(item, lang) {
 
     // prettify?
     if ($("#beautify").hasClass("sel")) {
-        if (lang == "language-css")
+        if (lang.indexOf( "language-css")!=-1)
             s = css_beautify(s);
-        else if (lang == "language-html")
+        else if (lang.indexOf("language-html")!=-1)
             s = style_html(s);
         else
             s = js_beautify(s);
@@ -155,8 +157,10 @@ function build_item(item, lang) {
         setTimeout(function(){
 //            prettyPrint();
 
-            hljs.highlightBlock($("pre>code").get(0));
-
+            //hljs.highlightBlock($("pre>code").get(0));
+            SyntaxHighlighter.config.tagName='code'
+            //SyntaxHighlighter.highlight($("pre>code").get(0));
+			SyntaxHighlighter.highlight();
             $("body").removeClass("wait");
             $("pre").show();
         }, 10);
