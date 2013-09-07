@@ -70,13 +70,15 @@ function init() {
 function init2() {
     setTimeout(function() {
         // show html node initially
-        $("#htmllist li >a").trigger("click");
+        $("#htmllist li >a").eq(0).trigger("click");
     }, 10);
 }
 
 
 // shows the source in given <li>
 function show_src(li) {
+    console.debug("show_src "+li);
+
     if (!li) {
         // find active li
         li = $("li[class~=sel]");
@@ -90,6 +92,9 @@ function show_src(li) {
 
     if (index < 0)
         return;
+
+    // chrome fix: scroll to top first
+    window.scrollTo(0,0);
 
     $("#src>code").text("");
 
@@ -132,10 +137,14 @@ function show_src(li) {
 
 // shows the sources of a loaded node
 function build_item(item, lang) {
+    console.debug("build_item");
+
     var s = item.data || item.inline;
 
     // prettify?
     if ($("#beautify").hasClass("sel")) {
+        s = s.trim();
+
         if (lang == "language-css")
             s = css_beautify(s);
         else if (lang == "language-html")
@@ -264,18 +273,19 @@ function data_received(resp) {
 
     var i, item;
 
+    // html
+    for (i = 0; i < resp.html.length; i++) {
+        item = resp.html[i];
+        add_item($("#htmllist"), item);
+        update_li_text(item);
+    }
     // js
     for (i = 0; i < jscount; i++) {
         item = resp.js[i];
 
         add_item($("#jslist"), item);
-/*        if (!item.src && !item.onclick) */
         if (!item.src)
             jsinline += 1;
-
-//        if (item.onclick)
-//            onclickcount += 1;
-
         update_li_text(item);
     }
     // css
@@ -286,10 +296,6 @@ function data_received(resp) {
             cssinline += 1;
         update_li_text(item);
     }
-    // single html
-    item = resp.html[0];
-    add_item($("#htmllist"), item);
-    update_li_text(item);
 
 
     // update counts

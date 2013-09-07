@@ -1,6 +1,6 @@
 {
   "name": "Quick source viewer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "View page sources: HTML + Javascript + CSS",
   "permissions": [
     "tabs", "<all_urls>"
@@ -20,6 +20,6 @@
   ],
   "options_page": "options.html",
   "background": { "scripts" : ["config.js", "bg.js"]},
-  "minimum_chrome_version": "15"
+  "minimum_chrome_version": "26"
 }
 

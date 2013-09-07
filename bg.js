@@ -10,31 +10,12 @@ String.prototype.startsWith = function(s) {
 
 chrome.browserAction.onClicked.addListener(function(tab) {
 
-    // open result tab
+    // start viewer tab
     var url = chrome.extension.getURL('maintab.html#'+tab.id);
     chrome.tabs.create({url:url});
-
-// get debug data:
-//    chrome.tabs.sendMessage(tab.id, {}, function(resp){
-//        console.debug(JSON.stringify(resp));
-//    });
-
-//    chrome.tabs.executeScript(null, {file: "content.js"});
 });
-
-
-// initial page loaded notif from content script:
-chrome.extension.onRequest.addListener(function(req, sender, sendResponse) {
-//    console.log("data");
-
-    update_badge(req);
-
-    sendResponse({});
-});
-
 
 function tab_updated(id) {
-//    var id = tab.tabId;
     console.log('active tab: '+id);
 
     if (!get_config("tooltip"))
@@ -62,8 +43,6 @@ chrome.tabs.onActivated.addListener(function(tab){
 chrome.tabs.onUpdated.addListener(function(tabid, info){
     if (info.status == "complete")
         tab_updated(tabid);
-    else
-        chrome.browserAction.setBadgeText({"text":""});
 });
 
 console.log('bg loaded');

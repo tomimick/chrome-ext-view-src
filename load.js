@@ -3,27 +3,34 @@
  * (plain js for speed, no zepto.js here)
  * */
 
-// mark initial nodes
-var data = build_response(get_js(true), get_css(true));
-// 1.0.1: no need to update counts from here
-//chrome.extension.sendRequest(data);
+// mark initial nodes (not injected)
+var data = build_response(null);
 
 
 // bg calls us, asking data
-chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
-    // count scripts, css
-    var data = build_response(get_js(false, request.showonclick), get_css());
-
-    // get html too
-    data.html = [{"inline":get_dom(), "count":document.getElementsByTagName('*').length}];
-
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    // count html, scripts, css
+    var data = build_response(request);
     sendResponse(data);
 });
 
 // builds response object
-function build_response(js, css) {
-    var data = {"url":location.href, "js":js, "css":css };
-    return data;
+function build_response(request) {
+    var arr_html = [], arr_js = [], arr_css = [];
+
+    get_js(arr_js, arr_html, !request, request ? request.showonclick : false);
+    get_css(arr_css, !request);
+
+    var response = {"url":location.href, "js":arr_js, "css":arr_css };
+
+    // get html body + template scripts
+    response.html = [{"inline":get_dom(),
+        "count":document.getElementsByTagName('*').length}];
+    for (var i = 0; i < arr_html.length ; i++) {
+        response.html.push(arr_html[i]);
+    }
+
+    return response;
 }
 
 // get body as string
@@ -32,8 +39,8 @@ function get_dom() {
 }
 
 // enumerate JS scripts in page
-function get_js(mark_initial, show_onclick) {
-    var a = [];
+// returns 2 arrays: js and html content
+function get_js(a, a_html, mark_initial, show_onclick) {
     var i, node;
 
     var nodes = document.getElementsByTagName("script");
@@ -41,6 +48,10 @@ function get_js(mark_initial, show_onclick) {
         node = nodes[i];
         if (!node.type || node.type == "text/javascript")
             pick_node(node, a, mark_initial);
+        else if (node.type == "text/template"
+            || node.type == "text/x-template"
+            || node.type == "text/html")
+            pick_node(node, a_html, mark_initial);
     }
     // inline onclick-handlers
     if (show_onclick) {
@@ -62,13 +73,10 @@ function get_js(mark_initial, show_onclick) {
             }
         }
     }
-
-    return a;
 }
 
 // enumerate CSS in page
-function get_css(mark_initial) {
-    var a = [];
+function get_css(a, mark_initial) {
     var i, node;
 
     /* XXX: get links and styles in order? */
@@ -85,8 +93,6 @@ function get_css(mark_initial) {
         node = styles[i];
         pick_node(node, a, mark_initial);
     }
-
-    return a;
 }
 
 // picks element's src-url or inline content
