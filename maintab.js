@@ -114,7 +114,7 @@ function show_src(li) {
     }
 
     // provide language hint for prettify
-    $("#src>code").removeClass("xml language-javascript language-html language-css").addClass(cls);
+    $("#src>code").removeClass("xml language-javascript language-html language-css javascript").addClass(cls);
 
     var item = arr[index];
 
@@ -137,7 +137,7 @@ function show_src(li) {
 
 // shows the sources of a loaded node
 function build_item(item, lang) {
-    console.debug("build_item");
+    console.debug("build_item " + lang);
 
     var s = item.data || item.inline;
 
