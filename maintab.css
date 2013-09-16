@@ -68,10 +68,12 @@ h2 {
 ol {
     margin:0;
     margin-bottom:10px;
-    padding-left:26px;
 /*    max-height: 40%;*/
     overflow-y: auto;
     overflow-x: hidden;
+}
+#list ol {
+    padding-left: 30px;
 }
 
 a {
@@ -84,14 +86,30 @@ pre#src {
     white-space: pre-wrap;
 /*    border: 1px solid #aaf;*/
     border: 0;
-    background: #fff;
     min-height: 20px;
-    margin: 0.5%;
+    margin: 0;
     width: 99%;
+    display: -webkit-flex;
 }
-code {
+pre#src code {
+    background: #fff;
     font-family: menlo,lucida console,monospace;
     font-size: 12px;
+    -webkit-flex: 1;
+    margin-left: -6px;
+}
+#src ol {
+    width: 0%;
+    color: #66d;
+    margin-top: 6px;
+    font-size: 12px;
+    padding-left: 44px;
+}
+body.nolinenum #src ol {
+    display: none;
+}
+body.nolinenum pre#src code {
+    margin-left: 0;
 }
 
 ol > li > a {

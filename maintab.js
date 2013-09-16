@@ -52,6 +52,10 @@ function init() {
         if (e.keyCode == 66) {
             $("#beautify").trigger("click");
         }
+        else if (e.keyCode == 78) {
+            $("body").toggleClass("nolinenum");
+            setTimeout(insert_line_numbers, 10);
+        }
     });
 
     // inject custom css
@@ -64,11 +68,21 @@ function init() {
         $("#beautify").addClass("sel");
     }
 
+    if (get_config("linenum"))
+        $("body").removeClass("nolinenum");
+    else
+        $("body").addClass("nolinenum");
 }
 
 // init phase2, after tree populated
 function init2() {
+
+    // for calculating line height
+    $("#src code").html("<span>any</span>");
+
     setTimeout(function() {
+        line_height = $("#src code span").height();
+
         // show html node initially
         $("#htmllist li >a").eq(0).trigger("click");
     }, 10);
@@ -133,6 +147,8 @@ function show_src(li) {
         $("#fname").text(item.count? data.url : item.onclick ? "ONCLICK" : "INLINE");
     }
 
+    if (!$("body").hasClass("nolinenum"))
+        setTimeout(insert_line_numbers, 10);
 }
 
 // shows the sources of a loaded node
@@ -363,4 +379,32 @@ function numberWithCommas(x) {
 document.addEventListener('DOMContentLoaded', function() {
     init();
 });
+
+// fills #src ol to have N items of <li>
+function insert_line_numbers() {
+    var nums = $("#src ol");
+    nums.empty();
+
+    var count = calculate_line_count();
+
+    for (var i = 0; i < count; i++) {
+        nums.append("<li></li>");
+    }
+}
+
+var line_height = 0;
+
+function calculate_line_count() {
+    // can't count linefeeds since pre-wrap can also wrap lines
+//    var s = $("#src code").text();
+//    return s.split("\n").length;
+
+    // let's just calculate lines by box height
+    var h = $("#src code").height();
+
+    if (!line_height)
+        return 1;
+
+    return h/line_height - 1;
+}
 
