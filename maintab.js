@@ -145,9 +145,9 @@ function build_item(item, lang) {
     if ($("#beautify").hasClass("sel")) {
         s = s.trim();
 
-        if (lang == "language-css")
+        if (lang.indexOf("language-css") >= 0)
             s = css_beautify(s);
-        else if (lang == "language-html")
+        else if (lang.indexOf("language-html") >= 0)
             s = style_html(s);
         else
             s = js_beautify(s);
@@ -182,7 +182,9 @@ function update_li_text(item, header) {
         s = numberWithCommas(item.inline.length)+" bytes";
     }
 
-    if (item.dynamic)
+    if (item.imported)
+        s += " <span class='dynamic'>@IMPORT</span>";
+    else if (item.dynamic)
         s += " <span class='dynamic'>INJECTED</span>";
 
     if (item.count) {

@@ -77,10 +77,18 @@ function get_js(a, a_html, mark_initial, show_onclick) {
 
 // enumerate CSS in page
 function get_css(a, mark_initial) {
-    var i, node;
+    var i;
 
-    /* XXX: get links and styles in order? */
+	var csslist = document.styleSheets;
+	for(i = 0; i < csslist.length; i++){
+		var css = csslist[i];
 
+		pick_node(css.ownerNode, a, mark_initial);
+
+		parse_cssrules(css, a, mark_initial, 0);
+	}
+
+/*
     var styles = document.getElementsByTagName("link");
     for(i=0; i<styles.length; i++){
         node = styles[i];
@@ -92,6 +100,26 @@ function get_css(a, mark_initial) {
     for(i=0; i<styles.length; i++){
         node = styles[i];
         pick_node(node, a, mark_initial);
+    }*/
+}
+
+// parse "@import file.css" declarations in given css file
+function parse_cssrules(cssNode, a, mark_initial, depth) {
+	if (depth > 10 || !cssNode)
+        return;
+
+    var rules = cssNode.cssRules;
+    if (rules) {
+        for (var i =0; i < rules.length; i++) {
+            var rule = rules[i];
+
+            if (rule instanceof CSSImportRule) {
+                var s = rule.styleSheet;
+                var item = pick_node({'href':s.href}, a, mark_initial);
+                item.imported = true;
+                parse_cssrules(rule.styleSheet, a, mark_initial, depth+1);
+            }
+        }
     }
 }
 
