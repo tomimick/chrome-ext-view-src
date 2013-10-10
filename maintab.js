@@ -281,7 +281,9 @@ function data_received(resp) {
     // set badge for this source tab too
     update_badge(data);
 
-    $("title").text("SRC "+resp.url);
+    // set title
+    var url = remove_url_prefix(resp.url);
+    $("title").text("SRC "+url);
 
     var jscount = resp.js.length;
     var csscount = resp.css.length;
@@ -335,7 +337,7 @@ function add_item(ol, item) {
     if (item.src)
         s = "<li><a href='"+item.src+"'>"+emphasize_name(item.src);
     else if (item.count)
-        s = "<li><a href='#'>"+data.url;
+        s = "<li><a href='#'>"+remove_url_prefix(data.url);
     else if (item.onclick)
         s = "<li><a href='#'>ONCLICK: <span></span>";
     else
@@ -359,6 +361,8 @@ function add_item(ol, item) {
 
 // emphasizes the file name part of the url
 function emphasize_name(url) {
+    url = remove_url_prefix(url);
+
     var len = url.length;
     var i = url.lastIndexOf("/");
     var s;
@@ -406,5 +410,14 @@ function calculate_line_count() {
         return 1;
 
     return h/line_height - 1;
+}
+
+// removes "http://"
+function remove_url_prefix(url) {
+    if (url.startsWith("http://"))
+        url = url.substr(7);
+    else if (url.startsWith("https://"))
+        url = url.substr(8);
+    return url;
 }
 

@@ -4,10 +4,6 @@
    - starts the viewer tab
 */
 
-String.prototype.startsWith = function(s) {
-    return this.indexOf(s) === 0;
-};
-
 chrome.browserAction.onClicked.addListener(function(tab) {
 
     // start viewer tab

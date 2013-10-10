@@ -99,3 +99,7 @@ function update_badge(data) {
 /* insert JSON encoded reply here for debugging */
 var debugdata = null;
 
+String.prototype.startsWith = function(s) {
+    return this.indexOf(s) === 0;
+};
+
