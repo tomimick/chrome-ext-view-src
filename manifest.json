@@ -1,6 +1,6 @@
 {
   "name": "Quick source viewer",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "View page sources: HTML + Javascript + CSS",
   "permissions": [
     "tabs", "<all_urls>"

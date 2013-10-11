@@ -4,6 +4,13 @@
 // script+css nodes of DOM provided by content script are stored here
 var data = {};
 
+// maximum size of file to be beautified initially
+// rest is beautified when scrolled to bottom
+var MAX_SIZE = 20000;
+
+// is whole file currently displayed?
+var is_whole_file;
+
 
 function init() {
 
@@ -31,6 +38,7 @@ function init() {
         $("ol>li").removeClass("sel");
         li.addClass("sel");
 
+        is_whole_file = false;
         show_src(li);
         return false;
     });
@@ -44,6 +52,7 @@ function init() {
     // toggle beautify
     $("#beautify").click(function(){
         $(this).toggleClass("sel");
+        is_whole_file = false;
         show_src();
         return false;
     });
@@ -72,13 +81,28 @@ function init() {
         $("body").removeClass("nolinenum");
     else
         $("body").addClass("nolinenum");
+
+    // scroll handler to beautify whole file
+    var w = $(window);
+    w.scroll(function() {
+        var top = w.scrollTop();
+        if (top > 0 && $("body").height() <= (w.height() + top)) {
+            // at bottom
+            show_src(null, true);
+        }
+    });
+    // anchor to beautify whole file
+    $("#src").on("click", "#viewwhole", function() {
+        show_src(null, true);
+        return false;
+    });
 }
 
 // init phase2, after tree populated
 function init2() {
 
     // for calculating line height
-    $("#src code").html("<span>any</span>");
+    $("#src code").html("<span>&nbsp;</span>");
 
     setTimeout(function() {
         line_height = $("#src code span").height();
@@ -90,8 +114,8 @@ function init2() {
 
 
 // shows the source in given <li>
-function show_src(li) {
-    console.debug("show_src "+li);
+function show_src(li, show_whole_file) {
+//    console.debug("show_src " + li + show_whole_file);
 
     if (!li) {
         // find active li
@@ -107,42 +131,36 @@ function show_src(li) {
     if (index < 0)
         return;
 
-    // chrome fix: scroll to top first
-    window.scrollTo(0,0);
-
-    $("#src>code").text("");
-
     // js or css array?
     var arr;
     var ol = li.parent();
-    var cls = "";
+    var lang = "";
     if (ol.get(0).id == "jslist") {
         arr = data.js;
-        cls = "language-javascript";
+        lang = "javascript";
     } else if (ol.get(0).id == "htmllist") {
         arr = data.html;
-        cls = "language-html";
+        lang = "xml";
     } else {
         arr = data.css;
-        cls = "language-css";
+        lang = "css";
     }
 
-    // provide language hint for prettify
-    $("#src>code").removeClass("xml language-javascript language-html language-css javascript").addClass(cls);
+    $("#src>code").removeClass("language-javascript language-css language-xml").addClass("language-"+lang);
 
     var item = arr[index];
 
     if (item.src) {
         // external node
         if (item.data != undefined)
-            build_item(item, cls);
+            build_item(item, lang, show_whole_file);
         else
             load_data(item);
 
         $("#fname").text(item.src);
     } else {
         // inline node
-        build_item(item, cls);
+        build_item(item, lang, show_whole_file);
 
         $("#fname").text(item.count? data.url : item.onclick ? "ONCLICK" : "INLINE");
     }
@@ -152,39 +170,64 @@ function show_src(li) {
 }
 
 // shows the sources of a loaded node
-function build_item(item, lang) {
-    console.debug("build_item " + lang);
+function build_item(item, lang, show_whole_file) {
+    if (is_whole_file)
+        return;
 
+    console.debug("build_item " + lang + " whole=" + is_whole_file);
+
+    // large file, to show only first part?
     var s = item.data || item.inline;
+    if (!show_whole_file && s.length > MAX_SIZE) {
+        s = s.substr(0, MAX_SIZE);
+        is_whole_file = false;
+    } else {
+        is_whole_file = true;
+    }
+
+    var pos = $(window).scrollTop();
+
+    // called when source beautified
+    var onFinish = function(txt) {
+        $("#src>code").html(txt);
+
+        if (!is_whole_file) {
+            $("#src>code").append("\n\n<a id='viewwhole' href='#'>View all</a>");
+        }
+
+        // remember scroll pos
+        if (!show_whole_file) {
+            // chrome fix: scroll to top first
+            window.scrollTo(0, 0);
+        } else {
+            window.scrollTo(0, pos);
+        }
+    }
 
     // prettify?
     if ($("#beautify").hasClass("sel")) {
         s = s.trim();
 
-        if (lang.indexOf("language-css") >= 0)
+        if (lang.indexOf("css") >= 0)
             s = css_beautify(s);
-        else if (lang.indexOf("language-html") >= 0)
+        else if (lang.indexOf("xml") >= 0)
             s = style_html(s);
         else
             s = js_beautify(s);
     }
 
-    $("#src>code").text(s);
-
     // colorize?
     if (get_config("colorize")) {
-        $("body").addClass("wait");
-
-        $("pre").hide(); // makes prettify faster
+        if (show_whole_file)
+            $("body").addClass("wait2");
 
         setTimeout(function(){
-//            prettyPrint();
-
-            hljs.highlightBlock($("pre>code").get(0));
-
-            $("body").removeClass("wait");
-            $("pre").show();
+            var result = hljs.highlight(lang, s, true);
+            onFinish(hljs.fixMarkup(result.value, false, false));
+            $("body").removeClass("wait2");
         }, 10);
+    } else {
+        onFinish(s);
     }
 }
 
@@ -386,14 +429,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // fills #src ol to have N items of <li>
 function insert_line_numbers() {
-    var nums = $("#src ol");
-    nums.empty();
-
+    $("#src ol").empty();
+    var nums = [];
     var count = calculate_line_count();
 
     for (var i = 0; i < count; i++) {
-        nums.append("<li></li>");
+        nums.push("<li/>");
     }
+    $("#src ol").html(nums.join(""));
 }
 
 var line_height = 0;

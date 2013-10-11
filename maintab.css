@@ -16,7 +16,10 @@ body.err #showerr {
 body.wait {
 /*    background: #ddd;*/
     cursor: wait !important;
-/*    opacity: 0.8 !important;*/
+}
+body.wait2 #srcview {
+    cursor: wait !important;
+    opacity: 0.7 !important;
 }
 h1 {
     margin: 5px 0;
@@ -73,7 +76,7 @@ ol {
     overflow-x: hidden;
 }
 #list ol {
-    padding-left: 30px;
+    padding-left: 32px;
 }
 
 a {
