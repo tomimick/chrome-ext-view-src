@@ -14,19 +14,7 @@ var is_whole_file;
 
 function init() {
 
-    // call content script: ask js+css nodes
-    if (window.chrome && chrome.tabs) {
-        var tabid = location.hash.slice(1);
-        tabid = parseInt(tabid);
-
-        // ask to return onclick handlers too?
-        var show_onclick = get_config("onclick");
-
-        chrome.tabs.sendMessage(tabid, {"showonclick":show_onclick}, data_received);
-    } else {
-        // while developing
-        data_received(debugdata);
-    }
+    ask_page_data();
 
     // view sources
     $("ol").on("click", "a", function(){
@@ -112,6 +100,22 @@ function init2() {
     }, 10);
 }
 
+function ask_page_data() {
+    // call content script: ask js+css nodes
+    if (window.chrome && chrome.tabs) {
+        var tabid = location.hash.slice(1);
+        tabid = parseInt(tabid);
+
+        // ask to return onclick handlers too?
+        var show_onclick = get_config("onclick");
+
+        chrome.tabs.sendMessage(tabid, {"showonclick":show_onclick},
+                                data_received);
+    } else {
+        // while developing
+        data_received(debugdata);
+    }
+}
 
 // shows the source in given <li>
 function show_src(li, show_whole_file) {
@@ -202,7 +206,7 @@ function build_item(item, lang, show_whole_file) {
         } else {
             window.scrollTo(0, pos);
         }
-    }
+    };
 
     // prettify?
     if ($("#beautify").hasClass("sel")) {
@@ -211,7 +215,7 @@ function build_item(item, lang, show_whole_file) {
         if (lang.indexOf("css") >= 0)
             s = css_beautify(s);
         else if (lang.indexOf("xml") >= 0)
-            s = style_html(s);
+            s = html_beautify(s);
         else
             s = js_beautify(s);
     }
@@ -222,8 +226,9 @@ function build_item(item, lang, show_whole_file) {
             $("body").addClass("wait2");
 
         setTimeout(function(){
+            hljs.configure({classPrefix: ''});
             var result = hljs.highlight(lang, s, true);
-            onFinish(hljs.fixMarkup(result.value, false, false));
+            onFinish(hljs.fixMarkup(result.value));
             $("body").removeClass("wait2");
         }, 10);
     } else {
@@ -284,6 +289,7 @@ function load_data(item) {
                 update_li_text(item, header);
             } else {
                 $("body").addClass("err");
+                $("#src>code").text("HTTP Error " + xhr.status);
             }
         }
     };
@@ -311,10 +317,14 @@ function pick_caching_header(xhr) {
 // js+css data received from content script
 function data_received(resp) {
     if (!resp) {
-        // target page didn't have our content script
+        // target page not yet loaded, ask again
+        $("#src>code").text("Page loading...");
+        setTimeout(ask_page_data, 500);
+        return;
+    } else if (resp.err) {
+        // some error occurred
         $("body").addClass("err");
-
-//        chrome.browserAction.setBadgeText({"text":"Err"});
+        $("#src>code").text(resp.err);
         return;
     }
 
@@ -423,7 +433,7 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+window.addEventListener('load', function() {
     init();
 });
 

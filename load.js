@@ -18,16 +18,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 function build_response(request) {
     var arr_html = [], arr_js = [], arr_css = [];
 
-    get_js(arr_js, arr_html, !request, request ? request.showonclick : false);
-    get_css(arr_css, !request);
+    try {
+        get_js(arr_js, arr_html, !request, request ? request.showonclick : false);
+        get_css(arr_css, !request);
 
-    var response = {"url":location.href, "js":arr_js, "css":arr_css };
+        var response = {"url":location.href, "js":arr_js, "css":arr_css };
 
-    // get html body + template scripts
-    response.html = [{"inline":get_dom(),
-        "count":document.getElementsByTagName('*').length}];
-    for (var i = 0; i < arr_html.length ; i++) {
-        response.html.push(arr_html[i]);
+        // get html body + template scripts
+        response.html = [{"inline":get_dom(),
+            "count":document.getElementsByTagName('*').length}];
+        for (var i = 0; i < arr_html.length ; i++) {
+            response.html.push(arr_html[i]);
+    }
+    } catch (e) {
+        return {"err": ""+e};
     }
 
     return response;
