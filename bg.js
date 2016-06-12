@@ -11,34 +11,27 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.create({url:url});
 });
 
-function tab_updated(id) {
-    console.log('active tab: '+id);
+function tab_updated(tab) {
+    console.log('active tab: '+tab.id);
 
     if (!get_config("tooltip"))
         return;
 
-    // ask url
-    chrome.tabs.get(id, function(tab) {
-        if (tab.url && !tab.url.startsWith("chrome")) {
-            // ask counts from content script
-            chrome.tabs.sendMessage(id, {}, function(reply){
-                update_badge(reply);
-            });
-        } else {
-            // no reply from content script
-            chrome.browserAction.setBadgeText({"text":""});
-        }
+    // ask counts from content script
+    chrome.tabs.sendMessage(tab.id, {"badge":1}, function(reply){
+        update_badge(reply);
     });
 }
 
 // tab activity - update badge
-chrome.tabs.onActivated.addListener(function(tab){
-    var id = tab.tabId;
-    tab_updated(id);
+chrome.tabs.onActivated.addListener(function(info){
+    chrome.tabs.get(info.tabId, function(tab) {
+        tab_updated(tab);
+    });
 });
-chrome.tabs.onUpdated.addListener(function(tabid, info){
+chrome.tabs.onUpdated.addListener(function(tabid, info, tab){
     if (info.status == "complete")
-        tab_updated(tabid);
+        tab_updated(tab);
 });
 
 console.log('bg loaded');
