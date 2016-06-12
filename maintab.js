@@ -89,6 +89,24 @@ function init() {
         show_src(null, true);
         return false;
     });
+
+    // copy to clipboard
+    $("#copy2clip").click(function(){
+        $("body").addClass("wait2");
+
+        setTimeout(function(){
+            var item = show_src(null, true);
+            if (item) {
+                var s = item.pretty || item.data || item.inline;
+                copy2clipboard(s);
+            }
+
+            $("body").removeClass("wait2");
+        }, 10);
+
+        return false;
+    });
+
 }
 
 // init phase2, after tree populated
@@ -173,6 +191,8 @@ function show_src(li, show_whole_file) {
 
     if (!$("body").hasClass("nolinenum"))
         setTimeout(insert_line_numbers, 10);
+
+    return item;
 }
 
 // shows the sources of a loaded node
@@ -221,6 +241,8 @@ function build_item(item, lang, show_whole_file) {
         else
             s = js_beautify(s);
     }
+
+    item.pretty = s;
 
     // colorize?
     if (get_config("colorize")) {
@@ -485,5 +507,16 @@ function remove_url_prefix(url) {
     else if (url.startsWith("https://"))
         url = url.substr(8);
     return url;
+}
+
+// copy text to clipboard
+function copy2clipboard(txt) {
+    var copyFrom = document.createElement("textarea");
+    copyFrom.textContent = txt;
+    var body = document.getElementsByTagName('body')[0];
+    body.appendChild(copyFrom);
+    copyFrom.select();
+    document.execCommand('copy');
+    body.removeChild(copyFrom);
 }
 
