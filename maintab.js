@@ -11,8 +11,13 @@ var MAX_SIZE = 20000;
 // is whole file currently displayed?
 var is_whole_file;
 
+// id of target tab
+var tabid;
+
 
 function init() {
+
+    tabid = parseInt(location.hash.slice(1));
 
     ask_page_data();
 
@@ -103,9 +108,6 @@ function init2() {
 function ask_page_data() {
     // call content script: ask js+css nodes
     if (window.chrome && chrome.tabs) {
-        var tabid = location.hash.slice(1);
-        tabid = parseInt(tabid);
-
         // ask to return onclick handlers too?
         var show_onclick = get_config("onclick");
 
@@ -317,10 +319,21 @@ function pick_caching_header(xhr) {
 // js+css data received from content script
 function data_received(resp) {
     if (!resp) {
-        // target page not yet loaded, ask again
-        $("#src>code").text("Page loading...");
-        setTimeout(ask_page_data, 500);
+        var err = chrome.extension.lastError;
+
+        // still loading page?
+        chrome.tabs.get(tabid, function(tab) {
+            if (tab.status == "complete" && err) {
+                // can't show this page
+                $("#src>code").text("Error: Access is denied to chrome:// and Chrome Store pages");
+                return;
+            }
+            // target page not yet loaded, ask again
+            $("#src>code").text("Page loading...");
+            setTimeout(ask_page_data, 500);
+        });
         return;
+
     } else if (resp.err) {
         // some error occurred
         $("body").addClass("err");
