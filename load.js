@@ -43,7 +43,26 @@ function build_response(request) {
 
 // get body as string
 function get_dom() {
-    return document.documentElement.outerHTML;
+//    return document.documentElement.outerHTML;
+
+    // truncate long scripts+styles in HTML, they are listed separately
+
+    var dupNode = document.documentElement.cloneNode(true);
+
+    function truncate(nodes) {
+        var MAXLEN = 400;
+        var i, s;
+        for(i=0; i<nodes.length; i++){
+            s = nodes[i].innerHTML;
+            if (s && s.length > MAXLEN)
+                nodes[i].innerHTML = s.substr(0, MAXLEN) + " truncated "+s.length+"bytes...";
+        }
+    }
+
+    truncate(dupNode.getElementsByTagName("script"));
+    truncate(dupNode.getElementsByTagName("style"));
+
+    return dupNode.outerHTML;
 }
 
 // enumerate JS scripts in page
