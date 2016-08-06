@@ -392,7 +392,9 @@ function data_received(resp) {
         item = resp.js[i];
 
         add_item($("#jslist"), item);
-        if (!item.src)
+        if (item.onclick)
+            onclickcount += 1;
+        else if (!item.src)
             jsinline += 1;
         update_li_text(item);
     }
