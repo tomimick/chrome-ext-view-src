@@ -19,8 +19,6 @@ div.help {
     float: right;
     color: #777;
     width: 50%;
-/*    margin-left: 10%;*/
-    font-size: 80%;
 }
 div.help p {
     margin-top: 0;
@@ -38,6 +36,13 @@ div.item {
 .author {
 /*    float: right;*/
     text-align: center;
-    font-size: 80%;
+}
+
+label {
+    display: block;
+}
+
+#redcount {
+    width: 50px;
 }
 

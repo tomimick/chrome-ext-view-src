@@ -8,13 +8,17 @@
 
     <div class="item">
         <div class="help">
-            <p>Show the number of Javascript and CSS nodes as a badge
+            <p>Show the number of Javascript nodes as a badge
               in the toolbar.</p>
         </div>
 
         <h2>Badge</h2>
 
-        <label><input id="inptip" type="checkbox"/> Show node counts in badge</label>
+        <label><input id="inptip" type="checkbox"/> Show script node count</label>
+        <label><input id="isredcount" type="checkbox"/> Colorize to red if count is equal or greater than
+            <input id="redcount" type="text"/>
+        </label>
+
     </div>
 
 
@@ -25,7 +29,7 @@
             lines, whitespace and indentation to make source more readable.)</p>
 
             <p>You can control this on demand in the source view with a button
-            or a keyboard shortcut 'b'.</p>
+            or a keyboard shortcut 'B'.</p>
         </div>
 
         <h2>Beautify</h2>
@@ -37,7 +41,7 @@
         <div class="help">
             <p>Initially displays line numbers.</p>
             <p>You can control this on demand in the source view with a
-            keyboard shortcut 'n'.</p>
+            keyboard shortcut 'N'.</p>
         </div>
 
         <h2>Line numbers</h2>

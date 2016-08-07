@@ -6,6 +6,8 @@ function init() {
     function save() {
         var c = {};
         c.tooltip  = $("#inptip").get(0).checked;
+        c.isredcount  = $("#isredcount").get(0).checked;
+        c.redcount  = $("#redcount").val();
         c.beautify = $("#inpbeautify").get(0).checked;
         c.caching  = $("#inpcache").get(0).checked;
         c.onclick  = $("#inponclick").get(0).checked;
@@ -23,6 +25,8 @@ function init() {
 
     // read config
     $("#inptip").get(0).checked = get_config("tooltip");
+    $("#isredcount").get(0).checked = get_config("isredcount");
+    $("#redcount").val(get_config("redcount") || 50);
     $("#inpbeautify").get(0).checked = get_config("beautify");
     $("#inpcache").get(0).checked = get_config("caching");
     $("#inponclick").get(0).checked = get_config("onclick");

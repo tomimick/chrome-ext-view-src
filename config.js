@@ -33,6 +33,7 @@ function _init_config() {
     var c = {};
     c.beautify = true;
     c.tooltip  = true;
+    c.isredcount = true;
     c.colorize = true;
     c.caching = false;
     c.onclick = false;
@@ -80,25 +81,30 @@ function update_badge(data) {
         return;
 
     var txt = "";
+    var jscount = 0;
     if (data) {
-        var jscount = data.js.length;
-        /* subtract onclick count
-        for (var i = 0; i < data.js.length; i++) {
-            if (data.js[i].onclick)
-                jscount -= 1;
-        }*/
-
-        var csscount = data.css.length;
-        txt = ""+jscount+" "+csscount;
+        jscount = data.js.length;
+//        var csscount = data.css.length;
+        txt = ""+jscount;
     }
 
     chrome.browserAction.setBadgeText({"text":txt});
+
+    // colorize red?
+    if (get_config("isredcount")) {
+        var level = parseInt(get_config("redcount") || 50);
+        var isred = jscount >= level ? true : false;
+
+        var col = isred ? "#a00" : "#777";
+        chrome.browserAction.setBadgeBackgroundColor({"color":col});
+    }
 }
 
 
 /* insert JSON encoded reply here for debugging */
 var debugdata = null;
 
+// startsWith in Chrome 41 only?
 String.prototype.startsWith = function(s) {
     return this.indexOf(s) === 0;
 };
