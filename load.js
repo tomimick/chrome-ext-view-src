@@ -22,12 +22,12 @@ function build_response(request) {
 
     try {
         get_js(arr_js, arr_html, is_initial, request ? request.showonclick : false);
-        get_css(arr_css, is_initial);
-
         var response = {"url":location.href, "js":arr_js, "css":arr_css };
 
         // get html body + template scripts
         if (request && !request.badge) {
+            get_css(arr_css, is_initial);
+
             response.html = [{"inline":get_dom(),
                 "count":document.getElementsByTagName('*').length}];
                 for (var i = 0; i < arr_html.length ; i++) {
