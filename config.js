@@ -91,13 +91,14 @@ function update_badge(data) {
     chrome.browserAction.setBadgeText({"text":txt});
 
     // colorize red?
+    var isred = false;
     if (get_config("isredcount")) {
         var level = parseInt(get_config("redcount") || 50);
-        var isred = jscount >= level ? true : false;
-
-        var col = isred ? "#a00" : "#777";
-        chrome.browserAction.setBadgeBackgroundColor({"color":col});
+        isred = jscount >= level ? true : false;
     }
+
+    var col = isred ? "#a00" : "#777";
+    chrome.browserAction.setBadgeBackgroundColor({"color":col});
 }
 
 
