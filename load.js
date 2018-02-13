@@ -135,7 +135,16 @@ function parse_cssrules(cssNode, a, mark_initial, depth) {
 	if (depth > 10 || !cssNode)
         return;
 
-    var rules = cssNode.cssRules;
+    try {
+        var rules = cssNode.cssRules;
+    } catch (e) {
+        // can't access all cssRules - Chrome 64 returns SecurityError
+        // just ignore these items, they seem duplicates anyway
+        //var item = {"src":"error "+cssNode.href};
+        //a.push(item);
+        return;
+    }
+
     if (rules) {
         for (var i =0; i < rules.length; i++) {
             var rule = rules[i];
