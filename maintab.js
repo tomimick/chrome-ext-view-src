@@ -278,7 +278,8 @@ function update_li_text(item, header) {
     if (item.count) {
         // single html item
         s += ", "+item.count+ " nodes ";
-        s += "<a href='view-source:"+data.url+"' target='_blank' title='View sources before Javascript runs'>View&nbsp;original</a>";
+        // remove view-source: Chrome no longer supports
+        //s += "<a href='view-source:"+data.url+"' target='_blank' title='View sources before Javascript runs'>View&nbsp;original</a>";
     }
 
     if (header) {
