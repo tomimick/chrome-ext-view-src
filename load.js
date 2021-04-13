@@ -5,7 +5,10 @@
 
 // mark initial nodes (not injected)
 var data = build_response(null);
-
+var MAX_INLINE_LEN = 400;
+chrome.runtime.sendMessage({method: "get_config", key: "limit_inline"}, function(response) {
+    MAX_INLINE_LEN = response || 400;
+});
 
 // bg calls us, asking data
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -16,13 +19,13 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 // builds response object
 function build_response(request) {
-    var arr_html = [], arr_js = [], arr_css = [];
+    var arr_html = [], arr_js = [], arr_json=[], arr_other=[], arr_css = [];
 
     var is_initial = !request;
 
     try {
-        get_js(arr_js, arr_html, is_initial, request ? request.showonclick : false);
-        var response = {"url":location.href, "js":arr_js, "css":arr_css };
+        get_js(arr_js, arr_html, arr_json, arr_other, is_initial, request ? request.showonclick : false);
+        var response = {"url":location.href, "js":arr_js, "css":arr_css, json:arr_json, other:arr_other };
 
         // get html body + template scripts
         if (request && !request.badge) {
@@ -47,15 +50,16 @@ function get_dom() {
 
     // truncate long scripts+styles in HTML, they are listed separately
 
+
     var dupNode = document.documentElement.cloneNode(true);
 
     function truncate(nodes) {
-        var MAXLEN = 400;
+
         var i, s;
         for(i=0; i<nodes.length; i++){
             s = nodes[i].innerHTML;
-            if (s && s.length > MAXLEN)
-                nodes[i].innerHTML = s.substr(0, MAXLEN) + " truncated "+s.length+"bytes...";
+            if (s && s.length > MAX_INLINE_LEN)
+                nodes[i].innerHTML = s.substr(0, MAX_INLINE_LEN) + " truncated "+s.length+"bytes...";
         }
     }
 
@@ -67,18 +71,22 @@ function get_dom() {
 
 // enumerate JS scripts in page
 // returns 2 arrays: js and html content
-function get_js(a, a_html, mark_initial, show_onclick) {
+function get_js(arr_js, arr_html, arr_json, arr_other, mark_initial, show_onclick) {
     var i, node;
 
     var nodes = document.getElementsByTagName("script");
     for(i=0; i<nodes.length; i++){
         node = nodes[i];
-        if (!node.type || node.type == "text/javascript")
-            pick_node(node, a, mark_initial);
-        else if (node.type == "text/template"
-            || node.type == "text/x-template"
-            || node.type == "text/html")
-            pick_node(node, a_html, mark_initial);
+        if (!node.type || node.type === "text/javascript")
+            pick_node(node, arr_js, mark_initial);
+        else if (node.type === "application/json" || node.type === "application/ld+json")
+            pick_node(node, arr_json, mark_initial);
+        else if (node.type === "text/template"
+            || node.type === "text/x-template"
+            || node.type === "text/html")
+            pick_node(node, arr_html, mark_initial);
+        else
+            pick_node(node, arr_other, mark_initial);
     }
     // inline onclick-handlers
     if (show_onclick) {
@@ -86,7 +94,7 @@ function get_js(a, a_html, mark_initial, show_onclick) {
         for(i=0; i<nodes.length; i++){
             node = nodes[i];
             if (node.getAttribute("onclick")) {
-                var item = pick_node(node, a, mark_initial);
+                var item = pick_node(node, arr_js, mark_initial);
                 var s = "/* " + node.tagName.toLowerCase();
                 if (node.id)
                     s += "#"+node.id;

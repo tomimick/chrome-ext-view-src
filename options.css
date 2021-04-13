@@ -1,6 +1,6 @@
 
 body {
-    max-width: 600px;
+    max-width: 800px;
     margin: 10px auto;
     background: #eee;
     font-family: helvetica;
@@ -31,6 +31,11 @@ div.item {
     margin: 10px 0;
     background: #fff;
     overflow: hidden;
+}
+
+div.item .help {
+    color: #777;
+    margin-top: 3px;
 }
 
 .author {

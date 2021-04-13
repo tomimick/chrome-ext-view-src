@@ -3,7 +3,7 @@ body {
 /*    margin: 5px 1%;*/
     margin:0;
     font-family: helvetica;
-    font-size: 80%;
+    font-size: 100%;
     overflow: hidden;
     overflow-y: scroll;
 }

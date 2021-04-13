@@ -17,6 +17,13 @@ function get_config(key) {
     return c[key];
 }
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.method == "get_config")
+        sendResponse(get_config(request.key));
+    else
+        sendResponse({}); // snub them.
+});
+
 // set whole config, c is an object
 function save_config(c) {
     console.debug("save_config", c);
