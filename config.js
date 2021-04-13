@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.method == "get_config")
         sendResponse(get_config(request.key));
     else
-        sendResponse({}); // snub them.
+        sendResponse(null);
 });
 
 // set whole config, c is an object

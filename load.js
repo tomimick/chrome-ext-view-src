@@ -54,7 +54,6 @@ function get_dom() {
     var dupNode = document.documentElement.cloneNode(true);
 
     function truncate(nodes) {
-
         var i, s;
         for(i=0; i<nodes.length; i++){
             s = nodes[i].innerHTML;
@@ -77,7 +76,7 @@ function get_js(arr_js, arr_html, arr_json, arr_other, mark_initial, show_onclic
     var nodes = document.getElementsByTagName("script");
     for(i=0; i<nodes.length; i++){
         node = nodes[i];
-        if (!node.type || node.type === "text/javascript")
+        if (!node.type || node.type === "text/javascript" || node.type === "application/javascript")
             pick_node(node, arr_js, mark_initial);
         else if (node.type === "application/json" || node.type === "application/ld+json")
             pick_node(node, arr_json, mark_initial);
