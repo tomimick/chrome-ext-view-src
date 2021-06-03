@@ -4,10 +4,6 @@
 // script+css nodes of DOM provided by content script are stored here
 var data = {};
 
-// maximum size of file to be beautified initially
-// rest is beautified when scrolled to bottom
-var MAX_SIZE = 20000;
-
 // is whole file currently displayed?
 var is_whole_file;
 
@@ -165,7 +161,13 @@ function show_src(li, show_whole_file) {
     } else if (ol.get(0).id == "htmllist") {
         arr = data.html;
         lang = "xml";
-    } else {
+    } else if (ol.get(0).id == "jsonlist") {
+        arr = data.json;
+        lang = "json";
+    } else if (ol.get(0).id == "otherlist") {
+        arr = data.other;
+        lang = "xml";
+    }else {
         arr = data.css;
         lang = "css";
     }
@@ -204,6 +206,7 @@ function build_item(item, lang, show_whole_file) {
 
     // large file, to show only first part?
     var s = item.data || item.inline;
+    var MAX_SIZE = get_config("limit_beauty") || 20000;
     if (!show_whole_file && s.length > MAX_SIZE) {
         s = s.substr(0, MAX_SIZE);
         is_whole_file = false;
@@ -376,7 +379,11 @@ function data_received(resp) {
 
     var jscount = resp.js.length;
     var csscount = resp.css.length;
+    var json_count = resp.json.length;
+    var other_count = resp.other.length;
     var jsinline = 0;
+    var json_inline = 0;
+    var other_inline = 0;
     var cssinline = 0;
     var onclickcount = 0;
 
@@ -408,6 +415,29 @@ function data_received(resp) {
         update_li_text(item);
     }
 
+    // json
+    for (i = 0; i < json_count; i++) {
+        item = resp.json[i];
+
+        add_item($("#jsonlist"), item);
+        if (item.onclick)
+            onclickcount += 1;
+        else if (!item.src)
+            json_inline += 1;
+        update_li_text(item);
+    }
+    // other
+    for (i = 0; i < other_count; i++) {
+        item = resp.other[i];
+
+        add_item($("#otherlist"), item);
+        if (item.onclick)
+            onclickcount += 1;
+        else if (!item.src)
+            other_inline += 1;
+        update_li_text(item);
+    }
+
 
     // update counts
     $("#jstotal").text(jscount-onclickcount);
@@ -416,6 +446,14 @@ function data_received(resp) {
     $("#csstotal").text(csscount);
     $("#cssext").text(csscount-cssinline);
     $("#cssin").text(cssinline);
+
+    $("#jsontotal").text(resp.json.length);
+    $("#jsonext").text(json_count-json_inline);
+    $("#jsonin").text(json_inline);
+
+    $("#othertotal").text(other_count);
+    $("#otherext").text(other_count-other_inline);
+    $("#otherin").text(other_inline);
 
     init2();
 }
