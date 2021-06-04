@@ -177,7 +177,7 @@ function pick_node(node, array, mark_initial) {
     if (src)
         item = {"src":src};
     else
-        item = {"inline":node.innerText};
+        item = {"inline":node.innerText || node.text || ''+node};
 
     // mark initially loaded elems
     if (mark_initial)
