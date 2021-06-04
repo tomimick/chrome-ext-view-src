@@ -11,14 +11,17 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     chrome.tabs.create({url:url});
 });
 
-function tab_updated(tab) {
-    console.log('active tab: '+tab.id);
+function tab_updated(tabid) {
+    console.log('active tab: '+tabid);
+
+    if (!tabid)
+        return;
 
     if (!get_config("tooltip"))
         return;
 
     // ask counts from content script
-    chrome.tabs.sendMessage(tab.id, {"badge":1}, function(reply){
+    chrome.tabs.sendMessage(tabid, {"badge":1}, function(reply){
         update_badge(reply);
     });
 }
@@ -26,12 +29,13 @@ function tab_updated(tab) {
 // tab activity - update badge
 chrome.tabs.onActivated.addListener(function(info){
     chrome.tabs.get(info.tabId, function(tab) {
-        tab_updated(tab);
+        if (tab && tab.id)
+            tab_updated(tab.id);
     });
 });
 chrome.tabs.onUpdated.addListener(function(tabid, info, tab){
-    if (info.status == "complete")
-        tab_updated(tab);
+    if (info.status == "complete" && tabid)
+        tab_updated(tabid);
 });
 
 console.log('bg loaded');
