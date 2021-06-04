@@ -551,7 +551,7 @@ function remove_url_prefix(url) {
 }
 
 // copy text to clipboard
-function copy2clipboard(txt) {
+function copy2clipboard_old(txt) {
     var copyFrom = document.createElement("textarea");
     copyFrom.textContent = txt;
     var body = document.getElementsByTagName('body')[0];
@@ -559,5 +559,23 @@ function copy2clipboard(txt) {
     copyFrom.select();
     document.execCommand('copy');
     body.removeChild(copyFrom);
+}
+
+// new clipboard copy
+function copy2clipboard(txt) {
+
+    navigator.permissions.query({ name: 'clipboard-write' }).then(result => {
+        if (result.state === 'granted') {
+            let blob = new Blob([txt], {type: 'text/plain'});
+            let item = new ClipboardItem({'text/plain': blob});
+            navigator.clipboard.write([item]).then(function() {
+                console.debug("ok");
+            }, function(error) {
+                console.error(error);
+            });
+        } else {
+            console.error("no permission");
+        }
+    });
 }
 
