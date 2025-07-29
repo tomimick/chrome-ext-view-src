@@ -1,6 +1,8 @@
 
 /* View and save config for the extension. */
 
+import { get_config, save_config, init_config } from "./config.js";
+
 function init() {
 
     function save() {
@@ -41,6 +43,6 @@ function init() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    init();
+    init_config().then(() => init());
 });
 

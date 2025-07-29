@@ -1,26 +1,32 @@
 {
   "name": "Quick source viewer",
   "short_name": "source view",
-  "version": "1.4.0",
+  "version": "1.5.1",
   "description": "View current page sources: HTML + Javascript + CSS",
-  "permissions": [
-    "<all_urls>"
-  ],
-  "manifest_version": 2,
-  "browser_action": {
+  "permissions": ["storage"],
+  "manifest_version": 3,
+  "action": {
     "default_icon": "gear19.png"
   },
   "icons": { "16": "gear19.png",
              "128": "gear128.png" },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["*://*/*"],
       "js": ["load.js"],
       "run_at":  "document_end"
     }
   ],
   "options_page": "options.html",
-  "background": { "scripts" : ["config.js", "bg.js"]},
-  "minimum_chrome_version": "26"
+	"background": {
+		"type": "module",
+		"service_worker": "bg.js"
+	},
+  "web_accessible_resources": [
+    {
+      "resources": ["default.css"],
+      "matches": ["*://*/*"]
+    }
+  ],
+  "minimum_chrome_version": "88"
 }
-

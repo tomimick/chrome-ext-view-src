@@ -3,18 +3,21 @@
  * (plain js for speed, no zepto.js here)
  * */
 
-// mark initial nodes (not injected)
-var data = build_response(null);
-var MAX_INLINE_LEN = 400;
-chrome.runtime.sendMessage({method: "get_config", key: "limit_inline"}, function(response) {
-    MAX_INLINE_LEN = response || 400;
-});
+let MAX_INLINE_LEN = 400;
 
-// bg calls us, asking data
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    // count html, scripts, css
-    var data = build_response(request);
-    sendResponse(data);
+chrome.storage.sync.get('conf').then(conf => {
+
+    MAX_INLINE_LEN = conf.conf.limit_inline || 400;
+
+    // mark initial nodes (not injected)
+    build_response(null);
+
+    // bg calls us, asking data
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        // count html, scripts, css
+        var data = build_response(request);
+        sendResponse(data);
+    });
 });
 
 // builds response object

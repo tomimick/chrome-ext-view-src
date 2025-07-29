@@ -1,6 +1,8 @@
 
 /* js for source viewer tab */
 
+import { init_config, get_config, update_badge, config_is_hilighted } from "./config.js";
+
 // script+css nodes of DOM provided by content script are stored here
 var data = {};
 
@@ -510,7 +512,7 @@ function numberWithCommas(x) {
 }
 
 window.addEventListener('load', function() {
-    init();
+    init_config().then(() => init());
 });
 
 // fills #src ol to have N items of <li>

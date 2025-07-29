@@ -1,43 +1,45 @@
 
 /* Get and set configuration for this extension. */
 
-/* Configuration is persisted to localstorage. */
+/* Configuration is persisted to extension storage. */
 
+// myconfig variable here mirrors chrome.storage
+let myconfig = {};
 
-// get config value for key
-function get_config(key) {
-//    console.debug("get_config", key);
+// init myconfig, caller must wait for promise
+export function init_config() {
+    return new Promise(function(resolve) {
+        chrome.storage.sync.get('conf').then(data => {
 
-    // is config initialized?
-    if (localStorage.init == undefined)
-        _init_config();
-
-    var s = localStorage.c || '""';
-    var c = JSON.parse(s);
-    return c[key];
+            if (!data.conf) {
+                _init_config().then(() => resolve(null))
+            } else {
+                myconfig = data.conf;
+                resolve(null);
+            }
+        });
+    });
 }
 
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.method == "get_config")
-        sendResponse(get_config(request.key));
-    else
-        sendResponse(null);
-});
+// get config value for key
+export function get_config(key) {
+    return myconfig[key];
+}
 
 // set whole config, c is an object
-function save_config(c) {
-    console.debug("save_config", c);
+export function save_config(c) {
+    //console.debug("save_config", c);
 
-    localStorage.c = JSON.stringify(c);
+    myconfig = c;
 
-    localStorage.init = "1"; // init done
+    chrome.storage.sync.set({'conf':c});
 }
 
 // initialize config
 function _init_config() {
     console.debug("_init_config");
 
-    var c = {};
+    let c = {};
     c.beautify = true;
     c.tooltip  = true;
     c.isredcount = true;
@@ -51,14 +53,17 @@ function _init_config() {
                  "//widgets.twimg.com",
                  "//platform.twitter.com"];
 
-    // css from file
-    c.css = load_file("css.ini");
-
-    save_config(c);
+    // read css from file
+    return fetch("default.css")
+        .then((response) => response.text())
+        .then((text) => {
+            c.css = text
+            save_config(c);
+        })
 }
 
 // should this url be hilighted?
-function config_is_hilighted(url) {
+export function config_is_hilighted(url) {
     var arr = get_config("hilight");
 
     for (var i = 0; i < arr.length; i++) {
@@ -68,24 +73,10 @@ function config_is_hilighted(url) {
     return false;
 }
 
-// load a local file
-function load_file(fname) {
-    try {
-        xhr = new XMLHttpRequest();
-        xhr.open("GET", fname, false);
-        xhr.send(null);
-        return xhr.responseText;
-    } catch (e) {
-        console.debug("ERR load_file");
-        return "//ERR "+fname;
-    }
-}
 
 // update icon badge with counts - max 4 chars!
 // (here in config.js since no util.js yet exists)
-function update_badge(data) {
-    if (!get_config("tooltip"))
-        return;
+export function update_badge(data) {
 
     var txt = "";
     var jscount = 0;
@@ -95,7 +86,7 @@ function update_badge(data) {
         txt = ""+jscount;
     }
 
-    chrome.browserAction.setBadgeText({"text":txt});
+    chrome.action.setBadgeText({"text":txt});
 
     // colorize red?
     var isred = false;
@@ -105,15 +96,5 @@ function update_badge(data) {
     }
 
     var col = isred ? "#a00" : "#777";
-    chrome.browserAction.setBadgeBackgroundColor({"color":col});
+    chrome.action.setBadgeBackgroundColor({"color":col});
 }
-
-
-/* insert JSON encoded reply here for debugging */
-var debugdata = null;
-
-// startsWith in Chrome 41 only?
-String.prototype.startsWith = function(s) {
-    return this.indexOf(s) === 0;
-};
-
